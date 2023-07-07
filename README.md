@@ -1,0 +1,1 @@
+# openstack-gentoo-image
