@@ -13,7 +13,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/linitio/openstack-gentoo-image">
-    <img src="images/logo.png" alt="Logo" width="105" height="150">
+    <img src="images/logo.png" alt="Logo" width="105" height="110">
   </a>
 
 <h3 align="center">Gentoo Linux image for OpenStack</h3>
