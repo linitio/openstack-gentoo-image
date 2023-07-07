@@ -34,7 +34,7 @@ jobs:
           sudo dnf update -y
           sudo dnf install -y libguestfs-tools libguestfs-tools-c wget
       # Runs a set of commands using the runners shell
-      - name: Download base image from AWS
+      - name: Download base image from Gentoo repository
         run: |
          sudo wget "https://gentoo.osuosl.org/experimental/amd64/openstack/gentoo-openstack-amd64-default-latest.qcow2" -O $BASE_OS_IMAGE
       - name: Making some changes on base image
