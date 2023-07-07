@@ -1,0 +1,78 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+env:
+  VERSION: ${{ github.ref_name }}
+  BASE_OS_IMAGE: base-os.qcow2
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    tags:
+    - '*'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: [self-hosted, Linux]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a single command using the runners shell
+      - name: Install prerequies
+        run: |
+          sudo dnf update -y
+          sudo dnf install -y libguestfs-tools libguestfs-tools-c wget
+      # Runs a set of commands using the runners shell
+      - name: Download base image from AWS
+        run: |
+         sudo wget "https://gentoo.osuosl.org/experimental/amd64/openstack/gentoo-openstack-amd64-default-latest.qcow2" -O $BASE_OS_IMAGE
+      - name: Making some changes on base image
+        run: |
+         sudo virt-copy-in -a $BASE_OS_IMAGE config/cloud.cfg /etc/cloud/
+      - name: Sparsify image
+        run: |
+         sudo virt-sysprep -a $BASE_OS_IMAGE
+         sudo virt-sparsify --compress $BASE_OS_IMAGE gentoo-amd64-default-${{ env.VERSION }}.qcow2
+         sudo md5sum gentoo-amd64-default-${{ env.VERSION }}.qcow2 > md5.txt
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          name: Gentoo Linux version ${{ env.VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Upload image to release asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: gentoo-amd64-default-${{ env.VERSION }}.qcow2
+          asset_name: gentoo-amd64-default-${{ env.VERSION }}.qcow2
+          asset_content_type: application/octet-stream
+
+      - name: Add md5.txt file
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: md5.txt
+          asset_name: md5.txt
+          asset_content_type: text/plain
