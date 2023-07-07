@@ -53,7 +53,7 @@ To get a local copy up and running follow these simple example steps.
 2. Download the latest image from [release page](https://github.com/linitio/openstack-gentoo-image/releases "Release page")
 3. Upload image to your OpenStack environment
    ```sh
-   openstack image create --disk-format=qcow2 --container-format=bare --file amzn2-kvm-2.0.20220606.1-x86_64.xfs.gpt.qcow2  'Gentoo Linux'
+   openstack image create --disk-format=qcow2 --container-format=bare --file  gentoo-amd64-default-<BUILD_RELEASE>.qcow2 'Gentoo Linux'
    ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -75,14 +75,12 @@ Don't forget to give the project a star! Thanks again!
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-
 <!-- LICENSE -->
 ## License
 
 Distributed under the GPL-2.0 License. See `LICENSE.md` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
 
 
 <!-- CONTACT -->
